@@ -11,6 +11,7 @@ package com.mycompany.bp1_tugas_galbi;
 import java.awt.*;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.util.Base64;
 
 public class Cryptography_Tools extends Frame {
 
@@ -35,13 +36,21 @@ public class Cryptography_Tools extends Frame {
         return caesarEncode(text, 26 - shift);
     }
 
+    private String base64Encode(String text) {
+        return Base64.getEncoder().encodeToString(text.getBytes());
+    }
+
+    private String base64Decode(String text) {
+        return new String(Base64.getDecoder().decode(text));
+    }
+
     public Cryptography_Tools() {
         super("Cryptography Tools");
         setSize(600, 400);
 
         Choice cipherList = new Choice();
         cipherList.add("Caesar Cipher");
-        cipherList.add("");
+        cipherList.add("Base64");
 
         Choice choice = new Choice();
         choice.add("Encode");
@@ -80,13 +89,28 @@ public class Cryptography_Tools extends Frame {
             String selectedChoice = choice.getSelectedItem();
             String outputText = "";
 
-            if (selectedCipher.equals("Caesar Cipher")) {
-                if (selectedChoice.equals("Encode")) {
-                    outputText = caesarEncode(inputText, 3);
-                } else {
-                    outputText = caesarDecode(inputText, 3);
+            try {
+                if (selectedCipher.equals("Caesar Cipher")) {
+                    if (selectedChoice.equals("Encode")) {
+                        outputText = caesarEncode(inputText, 3);
+                    } else {
+                        outputText = caesarDecode(inputText, 3);
+                    }
+                } else if (selectedCipher.equals("Base64")) {
+                    if (selectedChoice.equals("Encode")) {
+                        outputText = base64Encode(inputText);
+                    } else {
+                        try {
+                            outputText = base64Decode(inputText);
+                        } catch (IllegalArgumentException ex) {
+                            outputText = "Invalid Base64 input!";
+                        }
+                    }
                 }
+            } catch (Exception ex) {
+                outputText = "An error occurred: " + ex.getMessage();
             }
+        
             outputField.setText(outputText);
         });
 
